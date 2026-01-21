@@ -55,15 +55,18 @@ setup_mongodb_replicaset() {
     fi
     log_info "Detected MongoDB tool: ${mongo_tool}"
     
-    # Check if replica set is already initialized (without authentication first)
+    # Check if replica set is already initialized by trying to get status with authentication
     log_info "Checking if replica set is already initialized..."
     local rs_status
     rs_status=$(kubectl -n "${ns}" exec "${pod_name}" -c mongodb -- ${mongo_tool} \
         --quiet \
         --port 28000 \
-        --eval "try { rs.status(); print('INITIALIZED'); } catch(e) { print('NOT_INITIALIZED'); }" 2>/dev/null | grep -E "INITIALIZED|NOT_INITIALIZED" || echo "NOT_INITIALIZED")
+        -u "${mongodb_user}" \
+        -p "${mongodb_password}" \
+        --authenticationDatabase admin \
+        --eval "try { var s = rs.status(); if (s.ok === 1) { print('INITIALIZED'); } else { print('NOT_INITIALIZED'); } } catch(e) { print('NOT_INITIALIZED'); }" 2>/dev/null | tail -1)
     
-    if [[ "${rs_status}" == *"INITIALIZED"* ]]; then
+    if [[ "${rs_status}" == "INITIALIZED" ]]; then
         log_info "Replica set ${replset_name} is already initialized"
         set -e
         return 0
@@ -91,9 +94,30 @@ setup_mongodb_replicaset() {
     
     log_info "Initializing replica set with members: ${members_js}"
     
-    # Initialize replica set and create initial user in one go
-    # This avoids the "requires authentication" error after replica set is initialized
-    log_info "Executing rs.initiate() and creating initial user and databases..."
+    # First, create the initial admin user (this works with localhost exception before replica set init)
+    log_info "Creating initial admin user..."
+    kubectl -n "${ns}" exec -i "${pod_name}" -c mongodb -- ${mongo_tool} \
+        --quiet \
+        --port 28000 <<EOF
+try {
+    var adminDB = db.getSiblingDB('admin');
+    adminDB.createUser({
+        user: '${mongodb_user}',
+        pwd: '${mongodb_password}',
+        roles: [{role: 'root', db: 'admin'}]
+    });
+    print("✓ Initial admin user created successfully");
+} catch(e) {
+    if (e.message && e.message.indexOf("already exists") !== -1) {
+        print("Admin user already exists, continuing...");
+    } else {
+        print("Note: Could not create admin user: " + e.message);
+    }
+}
+EOF
+    
+    # Now initialize replica set with authentication
+    log_info "Executing rs.initiate() and creating databases..."
     
     # Format the JS array for databases
     local db_list_js
@@ -101,7 +125,10 @@ setup_mongodb_replicaset() {
     
     kubectl -n "${ns}" exec -i "${pod_name}" -c mongodb -- ${mongo_tool} \
         --quiet \
-        --port 28000 <<EOF
+        --port 28000 \
+        -u "${mongodb_user}" \
+        -p "${mongodb_password}" \
+        --authenticationDatabase admin <<EOF
 try {
     var cfg = {
         _id: "${replset_name}",
@@ -113,23 +140,6 @@ try {
     
     // Wait a moment for replica set to initialize
     sleep(5000);
-    
-    // Create the initial admin user in the admin database
-    try {
-        var adminDB = db.getSiblingDB('admin');
-        adminDB.createUser({
-            user: '${mongodb_user}',
-            pwd: '${mongodb_password}',
-            roles: [{role: 'root', db: 'admin'}]
-        });
-        print("✓ Initial admin user created successfully");
-    } catch(e) {
-        if (e.message && e.message.indexOf("already exists") !== -1) {
-            print("Admin user already exists, continuing...");
-        } else {
-            print("Note: Could not create admin user: " + e.message);
-        }
-    }
     
     // Create databases and grant permissions to admin user
     try {
@@ -185,6 +195,9 @@ EOF
             status_check=$(kubectl -n "${ns}" exec "${pod_name}" -c mongodb -- ${mongo_tool} \
                 --quiet \
                 --port 28000 \
+                -u "${mongodb_user}" \
+                -p "${mongodb_password}" \
+                --authenticationDatabase admin \
                 --eval "try { var s = rs.status(); var hasPrimary = false; if (s && s.members) { for (var i = 0; i < s.members.length; i++) { if (s.members[i].state === 1) { hasPrimary = true; break; } } } print(hasPrimary ? 'PRIMARY_FOUND' : 'NO_PRIMARY'); } catch(e) { print('ERROR: ' + e.message); }" 2>/dev/null | tail -1)
             set -e
             
