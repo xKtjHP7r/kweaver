@@ -135,7 +135,7 @@ install_isf() {
     # Install each release
     local install_failed=0
     for release_name in "${ISF_RELEASES[@]}"; do
-        if ! install_isf_release "${release_name}" "${release_name}" "${namespace}" "${HELM_CHART_REPO_NAME}" "${ISF_RELEASE_VERSIONS[$release_name]}" "${temp_config}"; then
+        if ! install_isf_release "${release_name}" "${release_name}" "${namespace}" "${HELM_CHART_REPO_NAME}" "${HELM_CHART_VERSION}" "${temp_config}"; then
             install_failed=1
             break
         fi
