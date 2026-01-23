@@ -26,7 +26,7 @@ bash ./deploy.sh full init
 
 | 项目 | 最低配置 | 推荐配置 |
 |------|---------|---------|
-| OS | CentOS 7/8+, RHEL 8 | CentOS 8 |
+| OS | CentOS 7/8+, RHEL 8 | CentOS 7 |
 | CPU | 16 核 | 24 核 |
 | 内存 | 48 GB | 64 GB |
 | 磁盘 | 200 GB | 500 GB |
