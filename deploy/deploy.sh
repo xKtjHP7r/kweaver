@@ -471,16 +471,16 @@ main() {
         case "${action}" in
             init)
                 shift 2
-                parse_dataagent_args "init" "$@"
-                install_dataagent
+                parse_sandboxruntime_args "init" "$@"
+                install_sandboxruntime
                 ;;
             uninstall)
                 shift 2
-                parse_dataagent_args "uninstall" "$@"
-                uninstall_dataagent
+                parse_sandboxruntime_args "uninstall" "$@"
+                uninstall_sandboxruntime
                 ;;
             status)
-                show_dataagent_status
+                show_sandboxruntime_status
                 ;;
             *)
                 log_error "Unknown sandboxruntime action: ${action}"
@@ -623,14 +623,14 @@ main() {
                 install_agentoperator
                 install_dataagent
                 install_flowautomation
-                install_dataagent  # sandboxruntime uses dataagent functions
-                
+                install_sandboxruntime
+
                 log_info "KWeaver application services deployment completed!"
                 ;;
             uninstall)
                 check_root
                 log_info "Uninstalling KWeaver application services..."
-                uninstall_dataagent || true  # sandboxruntime
+                uninstall_sandboxruntime || true
                 uninstall_flowautomation || true
                 uninstall_dataagent || true
                 uninstall_agentoperator || true
@@ -647,7 +647,7 @@ main() {
                 show_agentoperator_status
                 show_dataagent_status
                 show_flowautomation_status
-                show_dataagent_status  # sandboxruntime
+                show_sandboxruntime_status
                 ;;
             *)
                 log_error "Unknown kweaver action: ${action}"
@@ -728,8 +728,8 @@ main() {
                 install_agentoperator
                 install_dataagent
                 install_flowautomation
-                install_dataagent  # sandboxruntime uses dataagent functions
-                
+                install_sandboxruntime
+
                 show_status
                 log_info ""
                 log_info "╔════════════════════════════════════════════════════════════════╗"
@@ -741,7 +741,7 @@ main() {
                 log_info "Full reset: Uninstalling all components..."
                 
                 # Uninstall KWeaver services first
-                uninstall_dataagent || true  # sandboxruntime
+                uninstall_sandboxruntime || true
                 uninstall_flowautomation || true
                 uninstall_dataagent || true
                 uninstall_agentoperator || true
