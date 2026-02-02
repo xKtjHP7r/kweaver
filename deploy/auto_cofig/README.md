@@ -2,7 +2,7 @@
 
 ## 简介
 
-一个自动化配置脚本 `auto_config`，用于快速配置数据源、导入业务知识网络和DataAgent。
+一个自动化配置脚本 `auto_config.sh`，用于快速配置数据源、导入业务知识网络和DataAgent。
 
 ## 配置文件说明
 
@@ -60,7 +60,7 @@ DS_COMMENT=备注信息  # 数据源备注信息
 在Git Bash或WSL中执行以下命令：
 
 ```bash
-chmod +x auto_config
+chmod +x auto_config.sh
 ```
 
 ## 执行脚本
@@ -83,19 +83,19 @@ chmod +x auto_config
 
 ```bash
 # 仅执行步骤1：获取token
-./auto_config --step 1
+./auto_config.sh --step 1
 
 # 仅执行步骤2：创建数据源并扫描
-./auto_config --step 2
+./auto_config.sh --step 2
 
 # 仅执行步骤3：导入业务知识网络
-./auto_config --step 3 业务知识网络.json
+./auto_config.sh --step 3 业务知识网络.json
 
 # 仅执行步骤4：导入DataAgent
-./auto_config --step 4 agent.json
+./auto_config.sh --step 4 agent.json
 
 # 仅执行步骤5：导入数据流
-./auto_config --step 5 数据流.json
+./auto_config.sh --step 5 数据流.json
 ```
 
 ### 参数说明
@@ -141,7 +141,7 @@ export IP_ADDRESS=192.168.1.100  # 替换为实际IP地址
 
 ### 4. 脚本执行权限不足
 
-**解决方法**：执行 `chmod +x auto_config` 赋予执行权限
+**解决方法**：执行 `chmod +x auto_config.sh` 赋予执行权限
 
 ## 支持的数据库类型
 
