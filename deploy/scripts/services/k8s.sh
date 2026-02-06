@@ -488,7 +488,7 @@ install_containerd() {
         if [[ "${os_id}" == "centos" ]] && [[ "${os_version_id}" == "7" ]]; then
             if [[ ! -f /etc/yum.repos.d/CentOS-Base.repo ]] || ! grep -q "mirrors.aliyun.com" /etc/yum.repos.d/CentOS-Base.repo 2>/dev/null; then
                 log_info "Detected CentOS 7 (EOL), configuring Aliyun base repo..."
-                curl -fsSLo /etc/yum.repos.d/CentOS-Base.repo https://mirrors.tuna.tsinghua.edu.cn/repo/Centos-7.repo
+                curl -fsSLo /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
                 ${PKG_MANAGER} clean all
                 rm -rf /var/cache/yum
             fi
