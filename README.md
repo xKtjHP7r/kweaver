@@ -11,6 +11,7 @@ The DIP platform includes key subsystems such as ADP, Decision Agent, DIP Studio
 ## 📚 Quick Links
 
 - 🤝 [Contributing](rules/CONTRIBUTING.md) - Guidelines for contributing to the project
+- 🚢 [Deployment](deploy/README.md) - One-click deploy to Kubernetes
 - 🚀 [Release Guidelines](rules/RELEASE.md) - Version management and release process
 - 🏗️ [Architecture](rules/ARCHITECTURE.md) - Architecture design specification
 - 🧾 [Changelog](rules/CHANGELOG.md) - All notable changes

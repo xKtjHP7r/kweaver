@@ -11,6 +11,7 @@ DIP 平台包括 ADP、Decision Agent、DIP Studio、AI Store 等关键子系统
 ## 📚 快速链接
 
 - 🤝 [贡献指南](rules/CONTRIBUTING.zh.md) - 项目贡献指南
+- 🚢 [部署指南](deploy/README.zh.md) - 一键部署到 Kubernetes
 - 🚀 [发布规范](rules/RELEASE.zh.md) - 版本管理与发布流程
 - 🏗️ [架构规范](rules/ARCHITECTURE.zh.md) - 架构设计规范
 - 🧾 [更新日志](rules/CHANGELOG.zh.md) - 重要变更记录
